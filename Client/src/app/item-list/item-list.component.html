@@ -1,0 +1,38 @@
+<div class="row justify-content-sm-center">
+  <div class="col-sm-6 col-md-8">
+    <div class="card">
+      <!-- <h3 *ngIf="itemList.length==0">No Orders Found...</h3> -->
+      <table class="table table-hover">
+        <thead>
+          <tr *ngIf="itemList.length==0">
+            <th>
+              <h4>No Orders Found...</h4>
+            </th>
+          </tr>
+          <tr *ngIf="itemList.length>0">
+            <th scope="col">Product Id</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Cutomer Name</th>
+            <th scope="col">Confirm</th>
+            <th scope="col">Reject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ref of itemList; let i=index">
+            <td>{{ref.item_id}}</td>
+            <td>{{ref.item_name}}</td>
+            <td>{{ref.customer_name}}</td>
+            <td><button type="button" class="btn btn-outline-primary" (click)="orderStatus('confirmed',i,ref)">Order
+                Confirm</button></td>
+            <td><button type="button" class="btn btn-outline-success" (click)="orderStatus('canceled',i,ref)">Order
+                Cancel</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="snackbar">{{snackBarMSg}}</div>
+<!-- 
+<div>{{ itemList | json}}</div> -->
