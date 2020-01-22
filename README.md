@@ -15,6 +15,9 @@ npm run start
 # Database Configuration 
 check db.js file
 
+dump.sql
+
+
 
 # Admin Login
 admin@gmail.com 123
