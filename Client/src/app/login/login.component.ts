@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private serive: ApiService, private router: Router) {
+  constructor(private service: ApiService, private router: Router) {
 
   }
 
@@ -24,27 +24,44 @@ export class LoginComponent implements OnInit {
     console.log('inside login')
     let body = {};
     body = { "email": this.email, "password": this.password }
-    this.serive.postData('login', body).subscribe((result) => {
-      console.log('result------------', result);
+    this.service.postData('login', body).subscribe((result1) => {
+      console.log('result------------', result1);
 
-      sessionStorage.setItem("id", result['id']);
-      sessionStorage.setItem("name", result['name']);
-      sessionStorage.setItem("type", result['type']);
-      
-      if (result["type"] == "admin") {
-        console.log('-------------1st if')
-        this.router.navigate(["dashboard"])        
-      }
-      if (result["type"] == "customer") {
-        console.log('-------------2nd if')
-        this.router.navigate(["products"])
-      }
+      this.service.makeSocketConnection();
+
+      this.service.socketOn("send_socket_id").subscribe((result2) => {
+
+        let query = "update mst_user set user_socket_id='" + result2["socket_id"] + "' where id=" + result1['id'];
+        let body = { "query": query };
+
+        this.service.postData('executequery', body).subscribe((result3) => {
+          sessionStorage.setItem("socket_id", result2["socket_id"]);
+
+          sessionStorage.setItem("id", result1['id']);
+          sessionStorage.setItem("name", result1['name']);
+          sessionStorage.setItem("type", result1['type']);
+
+          if (result1["type"] == "admin") {
+            console.log('-------------1st if')
+
+            this.router.navigate(["dashboard"])
+          }
+          if (result1["type"] == "customer") {
+            console.log('-------------2nd if')
+            this.router.navigate(["products"])
+          }
+
+        });
+
+
+
+      })
 
 
     });
   }
   acceptOrder() {
-    this.serive.socketEmit('acceptOrder', true)
+    this.service.socketEmit('acceptOrder', true)
   }
 
 

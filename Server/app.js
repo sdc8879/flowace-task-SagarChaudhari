@@ -18,14 +18,15 @@ http.listen(3000, () => console.log(`Example app listening on port`))
 
 io.on('connection', (socket) => {
     console.log('Client connected')
-    socket.emit('abc')
+
+    socket.emit('send_socket_id', { "socket_id": socket.id })
+
+
     socket.on('acceptOrder', (order) => {
-        console.log('acceptOrder-----------: ' + JSON.stringify(order));
         controller.confirmOrder(io, order)
     });
 
     socket.on("orderRequested", (orderObj) => {
-        console.log('orderRequested-----------: ' + JSON.stringify(orderObj));
         controller.orderRequested(io, orderObj)
     })
 

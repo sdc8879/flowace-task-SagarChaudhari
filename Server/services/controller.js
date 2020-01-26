@@ -1,7 +1,6 @@
 var dbconnect = require('../db');
 
 module.exports.login = function (req, res) {
-    console.log('inside login function', req.body);
 
     let query = "SELECT mst_user.id,mst_user.user_name,mst_user.user_email," +
         " mst_user_type.user_type " +
@@ -11,7 +10,7 @@ module.exports.login = function (req, res) {
         " AND mst_user.user_password=? "
 
     dbconnect.executeQueryParam(query, [req.body.params.email, req.body.params.password]).then((result) => {
-        console.log('result-----------', result)
+
         res.json(
             {
                 "id": result[0].id,
@@ -35,7 +34,6 @@ module.exports.getProductList = function (req, res) {
 
     let query = "SELECT * FROM mst_items WHERE item_quantity <>0"
     dbconnect.executeQuery(query).then((result) => {
-        console.log("getProductList------------", result);
         res.send(result)
     })
 
@@ -46,7 +44,6 @@ module.exports.orderRequested = function (io, data) {
 }
 
 module.exports.setOrderStatus = function (io, data) {
-
 
     let sqlQuery = "";
     sqlQuery = `Insert into mst_order (order_item_id,order_item_name,order_customer_id,order_status)
@@ -76,7 +73,8 @@ module.exports.setOrderStatus = function (io, data) {
                             "item_id": data.item_id,
                             "item_order_status": data.item_order_status
                         }
-                        io.emit("getOrderStatus", obj);
+
+                        io.to(data["socket_id"]).emit("getOrderStatus", obj);
                     }
 
                 });
@@ -87,8 +85,7 @@ module.exports.setOrderStatus = function (io, data) {
                     "item_id": data.item_id,
                     "item_order_status": data.item_order_status
                 }
-
-                io.emit("getOrderStatus", obj);
+                io.to(data["socket_id"]).emit("getOrderStatus", obj);
             }
 
         }
@@ -103,5 +100,15 @@ module.exports.confirmOrder = function (io, data) {
     io.emit('orderstatus', { "value": true })
 }
 
+
+module.exports.executequery = function (req, res) {
+
+
+    let query = req.body.params.query;
+
+    dbconnect.executeQuery(query).then((result) => {
+        res.json({ "message": "success" })
+    })
+}
 
 

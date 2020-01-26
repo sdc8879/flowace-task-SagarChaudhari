@@ -23,7 +23,9 @@ export class ItemListComponent implements OnInit {
   orderStatus(status, index, itemObj) {
 
     itemObj["customer_id"] = sessionStorage.getItem("id");
-    
+
+    // itemObj["socket_id"] = sessionStorage.getItem("socket_id");
+
     if (status == 'confirmed') {
       itemObj["item_order_status"] = 2;
       this.orderStatusUpdate(status, index, itemObj)

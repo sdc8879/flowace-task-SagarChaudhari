@@ -49,12 +49,15 @@ export class ProductPageComponent implements OnInit {
     obj = Object.assign(data)
     obj["customer_name"] = sessionStorage.getItem("name")
     obj["customer_id"] = sessionStorage.getItem("id");
+    obj["socket_id"] = sessionStorage.getItem("socket_id")
     this.service.socketEmit("orderRequested", obj);
   }
 
   getOrderStatus() {
 
     this.service.socketOn("getOrderStatus").subscribe((result) => {
+
+      console.log('result----------->',result)
 
       this.productList.forEach(element1 => {
 

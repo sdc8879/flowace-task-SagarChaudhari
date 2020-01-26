@@ -22,15 +22,22 @@ export class ApiService {
   projectPath: any;
   constructor(private http: HttpClient) {
     console.log('inside service')
-    this.projectPath = 'http://localhost:3000'
+    this.projectPath = 'http://localhost:3000';
+  }
+
+  makeSocketConnection() {
     this.socket = io(this.projectPath);
+    this.socketOn("send_socket_id").subscribe((result) => {
+      sessionStorage.setItem("socket_id", result["socket_id"]);
+    })
+  }
 
-    // this.socket.on('abc', (data) => {
-    //   console.log('inside abc')
-    // })
 
+  setSocketId() {
 
   }
+
+
   getData(url: string) {
     return this.http.get(this.projectPath + "/api/" + url)
   }
@@ -43,17 +50,20 @@ export class ApiService {
 
   socketOn(eventname) {
     let observable = new Observable(observer => {
-      this.socket.on(eventname, (data) => {
-        
-        observer.next(data);
-      });
+      if (!!this.socket) {
+        this.socket.on(eventname, (data) => {
+          observer.next(data);
+        });
+      }
     })
     return observable;
   }
 
   socketEmit(eventname, data) {
     console.log("inside socket emit")
-    this.socket.emit(eventname, data)
+    if (!!this.socket) {
+      this.socket.emit(eventname, data)
+    }
   }
 
 }
